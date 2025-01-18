@@ -253,8 +253,37 @@ example : f n ≤ f (n+1) := by
 End of chapter exercises
 -/
 
-theorem div3_of_div3_sqr {m : ℕ} (h : 3 ∣ m ^ 2) : 3 ∣ m := by sorry
+/-
+exercise 1.2.1.a
+-/
+theorem div3 {m : ℕ} (h : 3 ∣ m ^ 2) : 3 ∣ m := by
+    rw [pow_two, Nat.prime_three.dvd_mul] at h
+    cases h <;> assumption
 
+example {m n : ℕ} (coprime_mn : m.Coprime n) : m ^ 2 ≠ 3 * n ^ 2 := by
+    intro sqr_eq
+    have : 3 ∣ m := by
+        apply div3
+        rw [sqr_eq]
+        apply dvd_mul_right
+    obtain ⟨k, meq⟩ := dvd_iff_exists_eq_mul_left.mp this
+    have : 3 * (3 * k ^ 2) = 3 * n ^ 2 := by
+        rw [← sqr_eq, meq]
+        ring
+    have : 3 * k ^ 2 = n ^ 2 :=
+        (mul_right_inj' (by norm_num)).mp this
+    have : 3 ∣ n := by
+        apply div3
+        rw [← this]
+        apply dvd_mul_right
+    have : 3 ∣ m.gcd n := by
+        apply Nat.dvd_gcd <;>
+        assumption
+    have : 3 ∣ 1 := by
+        convert this
+        symm
+        exact coprime_mn
+    norm_num at this
 
 theorem exercise_1_2_5_a : |a - b| ≤ |a| + |b| := by
     rw [av, av, av]
